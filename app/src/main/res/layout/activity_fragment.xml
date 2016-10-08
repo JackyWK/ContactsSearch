@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <!--因为我们没有在这个XML文件里面定义fragment，也没有用FragmentManager把fragment添加进来，
+    所以findFragmentById(R.id.fragment_container)的返回值是找不到对应的fragment，返回值自然就是null了-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+</FrameLayout>
