@@ -34,6 +34,17 @@
             android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen"
             android:windowSoftInputMode="stateAlwaysHidden" >
         </activity>
+        <activity android:name=".activity.AddContactActivity"
+            android:label="添加联系人"
+            android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen"
+            android:windowSoftInputMode="stateAlwaysHidden">
+
+        </activity>
+
+        <!-- 注册一个ContentProvider -->
+        <provider android:name=".provider.ContactProvier"
+            android:authorities="com.BDcomunication.providers.contactProvider"
+            android:exported="true"/>
     </application>
 
 </manifest>

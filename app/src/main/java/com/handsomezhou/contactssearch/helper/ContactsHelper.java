@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import com.handsomezhou.contactssearch.application.ContacstSearchApplication;
@@ -145,16 +144,16 @@ public class ContactsHelper {
      * @return start load success return true, otherwise return false
      */
     public boolean startLoadContacts() {
-        if (true == isLoading()) {
+        if (isLoading()) {
             return false;
         }
 
-        if (false == isContactsChanged()) {
+        if (!isContactsChanged()) {
             return false;
         }
 
         mLoadTask = new AsyncTask<Object, Object, List<Contacts>>() {
-
+            //doInBackground 的返回值传递到了下面 onPostExecute 中的参数result中了 ！
             @Override
             protected List<Contacts> doInBackground(Object... params) {
                 return loadContacts(mContext);
@@ -167,7 +166,7 @@ public class ContactsHelper {
                 setContactsChanged(false);
                 mLoadTask = null;
             }
-        }.execute();
+        }.execute();//一个AsyncTask对象只能execute()一次，否则会有异常抛出
 
         return true;
     }
@@ -545,10 +544,10 @@ public class ContactsHelper {
     @SuppressLint("DefaultLocale")
     private List<Contacts> loadContacts(Context context) {
         List<Contacts> kanjiStartContacts = new ArrayList<Contacts>();
-        HashMap<String, Contacts> kanjiStartContactsHashMap = new HashMap<String, Contacts>();
+        HashMap<String, Contacts> kanjiStartContactsHashMap = new HashMap<String, Contacts>();//以汉字开头的
 
         List<Contacts> nonKanjiStartContacts = new ArrayList<Contacts>();
-        HashMap<String, Contacts> nonKanjiStartContactsHashMap = new HashMap<String, Contacts>();
+        HashMap<String, Contacts> nonKanjiStartContactsHashMap = new HashMap<String, Contacts>();//以非汉字开头的
 
         List<Contacts> contacts = new ArrayList<Contacts>();
 
@@ -556,40 +555,40 @@ public class ContactsHelper {
         Cursor cursor = null;
         String sortkey = null;
         long startLoadTime = System.currentTimeMillis();
-        String[] projection = new String[]{ContactsContract.CommonDataKinds.Phone.CONTACT_ID, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER};
+        String[] projection = new String[]{Contacts.Contact._ID, Contacts.Contact.contactName,
+                Contacts.Contact.contactBdnumber, Contacts.Contact.contactPbnumber, Contacts.Contact.sortKey};
         try {
+            cursor = context.getContentResolver().query(Contacts.Contact.CONTACT_CONTENT_URI, projection, null, null, null);
 
-            cursor = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, null, null, "sort_key");
+            int idColumnIndex = cursor.getColumnIndex(Contacts.Contact._ID);
+            int dispalyNameColumnIndex = cursor.getColumnIndex(Contacts.Contact.contactName);
+            int bdnumberColumnIndex = cursor.getColumnIndex(Contacts.Contact.contactBdnumber);
+            int pbnumberColumnIndex = cursor.getColumnIndex(Contacts.Contact.contactPbnumber);
 
-            int idColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID);
-            int dispalyNameColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
-            int numberColumnIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
             while (cursor.moveToNext()) {
-
                 String id = cursor.getString(idColumnIndex);
                 String displayName = cursor.getString(dispalyNameColumnIndex);
-                String phoneNumber = cursor.getString(numberColumnIndex);
+                String bdouNumber = cursor.getString(bdnumberColumnIndex);
+                String phoneNumber = cursor.getString(pbnumberColumnIndex);
                 //	Log.i(TAG, "id=["+id+"]name=["+displayName+"]"+"number=["+phoneNumber+"]");
 
-                boolean kanjiStartContactsExist = kanjiStartContactsHashMap.containsKey(id);
+                boolean kanjiStartContactsExist = kanjiStartContactsHashMap.containsKey(id);//先前是否包含这个id的人
                 boolean nonKanjiStartContactsExist = nonKanjiStartContactsHashMap.containsKey(id);
 
-                if (true == kanjiStartContactsExist) {
+                if (kanjiStartContactsExist) {//如果先前已经包含这个id的人，则
                     cs = kanjiStartContactsHashMap.get(id);
                     Contacts.addMultipleContact(cs, phoneNumber);
-                } else if (true == nonKanjiStartContactsExist) {
+                } else if (nonKanjiStartContactsExist) {
                     cs = nonKanjiStartContactsHashMap.get(id);
                     Contacts.addMultipleContact(cs, phoneNumber);
                 } else {
-
-                    cs = new Contacts(id, displayName, phoneNumber);
-
+                    cs = new Contacts(id, displayName, phoneNumber, bdouNumber);
                     PinyinUtil.parse(cs.getNamePinyinSearchUnit());
-                    sortkey = PinyinUtil.getSortKey(cs.getNamePinyinSearchUnit()).toUpperCase();
+                    sortkey = PinyinUtil.getSortKey(cs.getNamePinyinSearchUnit()).toUpperCase();//姓名为：“几楼兔子” 变成了：JI 几 LOU 楼 TU 兔 ZI 子
                     cs.setSortKey(praseSortKey(sortkey));
-                    boolean isKanji = PinyinUtil.isKanji(cs.getName().charAt(0));
+                    boolean isKanji = PinyinUtil.isKanji(cs.getName().charAt(0));//判断名字第一个字是否是汉字(Kanji)
 
-                    if (true == isKanji) {
+                    if (isKanji) {
                         kanjiStartContactsHashMap.put(id, cs);
                     } else {
                         nonKanjiStartContactsHashMap.put(id, cs);
@@ -598,16 +597,14 @@ public class ContactsHelper {
                 }
             }
         } catch (Exception e) {
-
         } finally {
             if (null != cursor) {
                 cursor.close();
-                cursor = null;
             }
         }
 
         kanjiStartContacts.addAll(kanjiStartContactsHashMap.values());
-        Collections.sort(kanjiStartContacts, Contacts.mAscComparator);
+        Collections.sort(kanjiStartContacts, Contacts.mAscComparator);//把kanjiStartContacts中的Contacts按名字(即sortKey)进行升序排序
 
         nonKanjiStartContacts.addAll(nonKanjiStartContactsHashMap.values());
         Collections.sort(nonKanjiStartContacts, Contacts.mAscComparator);
@@ -615,17 +612,17 @@ public class ContactsHelper {
         //contacts.addAll(nonKanjiStartContacts);
         contacts.addAll(kanjiStartContacts);
 
-        //merge nonKanjiStartContacts and kanjiStartContacts
+        //合并 nonKanjiStartContacts and kanjiStartContacts
         int lastIndex = 0;
         boolean shouldBeAdd = false;
         for (int i = 0; i < nonKanjiStartContacts.size(); i++) {
-            String nonKanfirstLetter = PinyinUtil.getFirstLetter(nonKanjiStartContacts.get(i).getNamePinyinSearchUnit());
+            String nonKanfirstLetter = PinyinUtil.getFirstLetter(nonKanjiStartContacts.get(i).getNamePinyinSearchUnit());//获得以英文为首字母的名字的首字母
             //Log.i(TAG, "nonKanfirstLetter=["+nonKanfirstLetter+"]");
-            int j = 0;
-            for (j = 0 + lastIndex; j < contacts.size(); j++) {
+            int j;
+            for (j = lastIndex; j < contacts.size(); j++) {
                 String firstLetter = PinyinUtil.getFirstLetter(contacts.get(j).getNamePinyinSearchUnit());
                 lastIndex++;
-                if (firstLetter.charAt(0) > nonKanfirstLetter.charAt(0)) {
+                if (firstLetter.charAt(0) > nonKanfirstLetter.charAt(0)) { //比如“j>h”
                     shouldBeAdd = true;
                     break;
                 } else {
@@ -639,8 +636,8 @@ public class ContactsHelper {
                 //Log.i(TAG, "lastIndex="+lastIndex);
             }
 
-            if (true == shouldBeAdd) {
-                contacts.add(j, nonKanjiStartContacts.get(i));
+            if (shouldBeAdd) {
+                contacts.add(j, nonKanjiStartContacts.get(i));//把英文字母为首的名字插入到以汉字为首的名字中
                 shouldBeAdd = false;
             }
         }
@@ -649,7 +646,7 @@ public class ContactsHelper {
         Log.i(TAG, "endLoadTime-startLoadTime=[" + (endLoadTime - startLoadTime) + "] contacts.size()=" + contacts.size());
 
 		/*for (int i = 0; i < contacts.size(); i++) {
-			Log.i(TAG, "****************************************");
+            Log.i(TAG, "****************************************");
 			Contacts currentContacts = contacts.get(i);
 			while (null != currentContacts) {
 				Log.i(TAG, "name[" + currentContacts.getName()+"]phoneNumber[" + currentContacts.getPhoneNumber()+"]");
@@ -657,7 +654,7 @@ public class ContactsHelper {
 			}
 		}*/
 
-        return contacts;
+        return contacts;//最终返回人名按首字母升序排序的联系人
     }
 
     private void parseContacts(List<Contacts> contacts) {

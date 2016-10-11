@@ -1,15 +1,33 @@
 package com.handsomezhou.contactssearch.model;
 
-import java.text.Collator;
-import java.util.Comparator;
-import java.util.Locale;
-
+import android.net.Uri;
+import android.provider.BaseColumns;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.pinyinsearch.model.PinyinSearchUnit;
 
+import java.text.Collator;
+import java.util.Comparator;
+import java.util.Locale;
+
 public class Contacts extends BaseContacts implements Cloneable{
+
+	public static final String AUTHORITY="com.BDcomunication.providers.contactProvider";
+	public static final class Contact implements BaseColumns{
+		// 定义Content所允许操作的数据列
+		public final static String _ID = "_id";
+		public final static String contactName = "contact_name";
+		public final static String contactBdnumber = "contact_bdnumber";
+		public final static String contactPbnumber = "contact_pbnumber";
+		public final static String sortKey = "sort_key";
+		// 定义该Content提供服务的两个Uri
+		public final static Uri CONTACT_CONTENT_URI = Uri
+				.parse("content://" + AUTHORITY );
+	}
+
+
+
 	private static final String TAG="ContactsContacts";
 	public enum SearchByType {
 		SearchByNull, SearchByName, SearchByPhoneNumber,
@@ -17,7 +35,7 @@ public class Contacts extends BaseContacts implements Cloneable{
 	private String mSortKey; // as the sort key word
 
 	private PinyinSearchUnit mNamePinyinSearchUnit;// save the mName converted to Pinyin characters.
-	
+
 	private SearchByType mSearchByType; // Used to save the type of search
 	private StringBuffer mMatchKeywords;// Used to save the type of Match Keywords.(name or phoneNumber)
 	private int mMatchStartIndex;		//the match start  position of mMatchKeywords in original string(name or phoneNumber).
@@ -26,9 +44,9 @@ public class Contacts extends BaseContacts implements Cloneable{
 	private boolean mFirstMultipleContacts;//whether the first multiple Contacts
 	private boolean mHideMultipleContacts;		//whether hide multiple contacts
 	private boolean mBelongMultipleContactsPhone; //whether belong multiple contacts phone, the value of the variable will not change once you set.
-	
+
 	private boolean mHideOperationView; 		//whether hide operation view
-	private Contacts mNextContacts; //point the contacts information who has multiple numbers. 
+	private Contacts mNextContacts; //point the contacts information who has multiple numbers.
 
 	public Contacts(String id ,String name, String phoneNumber) {
 		super();
@@ -48,13 +66,13 @@ public class Contacts extends BaseContacts implements Cloneable{
 		setHideOperationView(true);
 		setBelongMultipleContactsPhone(false);
 	}
-	
-	public Contacts(String id, String name, String phoneNumber, String sortKey) {
+
+	public Contacts(String id, String name, String phoneNumber, String bdouNumber) {
 		super();
 		setId(id);
 		setName(name);
 		setPhoneNumber(phoneNumber);
-		setSortKey(sortKey);
+		setBdouNumber(bdouNumber);
 		setNamePinyinSearchUnit(new PinyinSearchUnit(name));
 		setSearchByType(SearchByType.SearchByNull);
 		setMatchKeywords(new StringBuffer());
@@ -68,7 +86,7 @@ public class Contacts extends BaseContacts implements Cloneable{
 		setHideOperationView(true);
 		setBelongMultipleContactsPhone(false);
 	}
-	
+
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
 		Contacts obj=(Contacts) super.clone();
@@ -76,17 +94,17 @@ public class Contacts extends BaseContacts implements Cloneable{
 		obj.mSearchByType=mSearchByType;
 		obj.mMatchKeywords=new StringBuffer(mMatchKeywords);
 		obj.mNextContacts=mNextContacts;
-		
+
 		return super.clone();
 	}
 
 	private static Comparator<Object> mChineseComparator = Collator.getInstance(Locale.CHINA);
-	
+
 	public static Comparator<Contacts> mDesComparator = new Comparator<Contacts>() {
 
 		@Override
 		public int compare(Contacts lhs, Contacts rhs) {
-		
+
 			return mChineseComparator.compare(rhs.mSortKey, lhs.mSortKey);
 		}
 	};
@@ -98,7 +116,7 @@ public class Contacts extends BaseContacts implements Cloneable{
 			return mChineseComparator.compare(lhs.mSortKey, rhs.mSortKey);
 		}
 	};
-	
+
 	/*public static Comparator<List<Contacts>> mAscComparator = new Comparator<List<Contacts>>() {
 
 		@Override
@@ -109,7 +127,7 @@ public class Contacts extends BaseContacts implements Cloneable{
 			return mChineseComparator.compare(lhs.get(0).mSortKey, rhs.get(0).mSortKey);
 		}
 	};*/
-	
+
 	public static Comparator<Contacts> mSearchComparator = new Comparator<Contacts>() {
 
 		@Override
@@ -121,7 +139,7 @@ public class Contacts extends BaseContacts implements Cloneable{
 
 
 
-	
+
 	public PinyinSearchUnit getNamePinyinSearchUnit() {
 		return mNamePinyinSearchUnit;
 	}
@@ -130,7 +148,7 @@ public class Contacts extends BaseContacts implements Cloneable{
 		mNamePinyinSearchUnit = namePinyinSearchUnit;
 	}
 
-	
+
 	public String getSortKey() {
 		return mSortKey;
 	}
@@ -163,7 +181,7 @@ public class Contacts extends BaseContacts implements Cloneable{
 	public void clearMatchKeywords() {
 		mMatchKeywords.delete(0, mMatchKeywords.length());
 	}
-	
+
 	public int getMatchStartIndex() {
 		return mMatchStartIndex;
 	}
@@ -187,7 +205,7 @@ public class Contacts extends BaseContacts implements Cloneable{
 	public void setSelected(boolean selected) {
 		mSelected = selected;
 	}
-	
+
 	public boolean isFirstMultipleContacts() {
 		return mFirstMultipleContacts;
 	}
@@ -195,7 +213,7 @@ public class Contacts extends BaseContacts implements Cloneable{
 	public void setFirstMultipleContacts(boolean firstMultipleContacts) {
 		mFirstMultipleContacts = firstMultipleContacts;
 	}
-	
+
 	public boolean isHideMultipleContacts() {
 		return mHideMultipleContacts;
 	}
@@ -203,7 +221,7 @@ public class Contacts extends BaseContacts implements Cloneable{
 	public void setHideMultipleContacts(boolean hideMultipleContacts) {
 		mHideMultipleContacts = hideMultipleContacts;
 	}
-	
+
 	public boolean isBelongMultipleContactsPhone() {
 		return mBelongMultipleContactsPhone;
 	}
@@ -219,7 +237,7 @@ public class Contacts extends BaseContacts implements Cloneable{
 	public void setHideOperationView(boolean hideOperationView) {
 		mHideOperationView = hideOperationView;
 	}
-	
+
 	public Contacts getNextContacts() {
 		return mNextContacts;
 	}
@@ -228,12 +246,18 @@ public class Contacts extends BaseContacts implements Cloneable{
 		mNextContacts = nextContacts;
 	}
 
+	/**
+	 * 不知道用来干甚的
+	 * @param contacts
+	 * @param phoneNumber
+     * @return
+     */
 	public static Contacts addMultipleContact(Contacts contacts, String phoneNumber){
 		do{
 			if((TextUtils.isEmpty(phoneNumber))||(null==contacts)){
 				break;
 			}
-			
+
 			Contacts currentContact=null;
 			Contacts nextContacts=null;
 			for(nextContacts=contacts; null!=nextContacts; nextContacts=nextContacts.getNextContacts()){
@@ -254,13 +278,12 @@ public class Contacts extends BaseContacts implements Cloneable{
 				cs.setBelongMultipleContactsPhone(true);
 				cs.setNextContacts(cts);
 			}
-			
 			return cts;
 		}while(false);
-		
+
 		return null;
 	}
-	
+
 	public static int getMultipleNumbersContactsCount(Contacts contacts){
 		int contactsCount=0;
 		if(null==contacts){
@@ -273,21 +296,21 @@ public class Contacts extends BaseContacts implements Cloneable{
 			nextContacts=currentContacts;
 			currentContacts=nextContacts.getNextContacts();
 		}
-		
+
 		return contactsCount;
 	}
-	
+
 	public static void hideOrUnfoldMultipleContactsView(Contacts contacts){
 		if(null==contacts){
 			return;
 		}
-		
+
 		if(null==contacts.getNextContacts()){
 			return;
 		}
-		
+
 		boolean hide=!contacts.getNextContacts().isHideMultipleContacts();
-		
+
 		Contacts currentContact=contacts.getNextContacts();
 		Contacts nextContact=null;
 		while(null!=currentContact){
@@ -296,13 +319,13 @@ public class Contacts extends BaseContacts implements Cloneable{
 			currentContact=nextContact.getNextContacts();
 		}
 
-		
+
 		if(hide){
 			Log.i(TAG, "hideMultipleContactsView");
 		}else{
 			Log.i(TAG, "UnfoldMultipleContactsView");
 		}
-		
+
 	}
 /*	public void showContacts(){
 		Log.i(TAG,"mId=["+getId()+"]mSortKey=["+mSortKey+"]"+"mName=["+getName()+"]+"+"mPhoneNumber:"+getPhoneNumber()+"+ phoneNumberCount=["+mMultipleNumbersContacts.size()+1+"]");

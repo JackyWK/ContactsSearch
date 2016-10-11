@@ -63,7 +63,7 @@ public abstract class BaseSingleFragmentActivity extends FragmentActivity {
 	private void loadFragment() {
 		FragmentManager fm = getSupportFragmentManager();
 		Fragment fragment = fm.findFragmentById(R.id.fragment_container);
-		if (false == isRealTimeLoadFragment()) {
+		if (! isRealTimeLoadFragment()) {
 			if (null == fragment) {
 				fragment = createFragment();
 				fm.beginTransaction().add(R.id.fragment_container, fragment)

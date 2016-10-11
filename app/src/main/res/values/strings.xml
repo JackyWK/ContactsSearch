@@ -10,4 +10,6 @@
     <string name="phone_number_count">(%d个号码)</string>
     <string name="click_to_unfold">点击可展开</string>
     <string name="click_to_hide">点击可隐藏</string>
+    <string name="contact_bdnumber">北斗设备号码</string>
+    <string name="contact_pbnumber">手机号码</string>
 </resources>
