@@ -72,7 +72,7 @@ public class T9SearchFragment extends BaseFragment implements OnT9TelephoneDialp
     @Override
     protected void initData() {
         setContext(getActivity());
-        ContactsHelper.getInstance().setOnContactsLoad(this);
+        ContactsHelper.getInstance().setOnContactsLoad(this);//这里实例化了一个ContactsHelper
         setFirstRefreshView(true);
     }
 
@@ -98,7 +98,7 @@ public class T9SearchFragment extends BaseFragment implements OnT9TelephoneDialp
         mT9TelephoneDialpadView.setOnT9TelephoneDialpadView(this);
         mT9TelephoneDialpadView.setInflater_ViwGroup(mTelephoneDialCloseBtn, mDialDeleteBtn,mT9InputEt);
 
-        mContactsOperationView = (ContactsOperationView) view.findViewById(R.id.contacts_operation_layout);
+        mContactsOperationView = (ContactsOperationView) view.findViewById(R.id.contacts_operation_layout);//显示联系人列表的界面
         mContactsOperationView.setOnContactsOperationView(this);
         boolean startLoad = ContactsHelper.getInstance().startLoadContacts();
         if (startLoad) {

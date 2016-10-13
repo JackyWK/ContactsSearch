@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import com.handsomezhou.contactssearch.util.ViewUtil;
 
 public abstract class BaseFragment extends Fragment {
-	private Context mContext;
+	public Context mContext;
 	private boolean mHideImeTouchOutsideEditText=true;
 
 	@Override

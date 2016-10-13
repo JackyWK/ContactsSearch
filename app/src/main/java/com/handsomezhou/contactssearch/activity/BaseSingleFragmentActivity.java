@@ -20,7 +20,7 @@ public abstract class BaseSingleFragmentActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContext(this);
-		if (true == isFullScreen()) {
+		if ( isFullScreen()) {
 			requestWindowFeature(Window.FEATURE_NO_TITLE);//没有标题，即全屏模式
 		}
 		setContentView(R.layout.activity_fragment);

@@ -65,7 +65,7 @@ public class ContactsHelper {
         // registerContentObserver();
     }
 
-    public static ContactsHelper getInstance() {
+    public static ContactsHelper getInstance() {//单例模式
         if (null == mInstance) {
             mInstance = new ContactsHelper();
         }
