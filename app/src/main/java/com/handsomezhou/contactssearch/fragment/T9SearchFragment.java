@@ -36,7 +36,7 @@ public class T9SearchFragment extends BaseFragment implements OnT9TelephoneDialp
 //	public static Button mDialDeleteBtn;
 //	public static EditText mT9InputEt;
 
-//    private View mKeyboardSwitchLayout;
+    //    private View mKeyboardSwitchLayout;
     private ImageView mKeyboardSwitchIv;
 
     private boolean mFirstRefreshView = true;
@@ -83,7 +83,7 @@ public class T9SearchFragment extends BaseFragment implements OnT9TelephoneDialp
         Button mDialDeleteBtn = (Button) view.findViewById(R.id.dial_delete_btn);
         Button addContactBtn = (Button) view.findViewById(R.id.addContactBtn);
         EditText mT9InputEt = (EditText) view.findViewById(R.id.dial_input_edit_text);
-        mT9InputEt.setCursorVisible(true);
+        mT9InputEt.setCursorVisible(true);//使光标显示出来
 
         //打开新建联系人信息界面
         addContactBtn.setOnClickListener(new View.OnClickListener() {
@@ -94,15 +94,16 @@ public class T9SearchFragment extends BaseFragment implements OnT9TelephoneDialp
             }
         });
 
-        mT9TelephoneDialpadView = (T9TelephoneDialpadView) view.findViewById(R.id.t9_telephone_dialpad_layout);
+        //单独的 键盘（一个自定义的view类）界面
+        mT9TelephoneDialpadView = (T9TelephoneDialpadView) view.findViewById(R.id.t9_telephone_dialpad_layout);//键盘界面
         mT9TelephoneDialpadView.setOnT9TelephoneDialpadView(this);
-        mT9TelephoneDialpadView.setInflater_ViwGroup(mTelephoneDialCloseBtn, mDialDeleteBtn,mT9InputEt);
+        mT9TelephoneDialpadView.setInflater_ViwGroup(mTelephoneDialCloseBtn, mDialDeleteBtn, mT9InputEt);
 
         mContactsOperationView = (ContactsOperationView) view.findViewById(R.id.contacts_operation_layout);//显示联系人列表的界面
         mContactsOperationView.setOnContactsOperationView(this);
         boolean startLoad = ContactsHelper.getInstance().startLoadContacts();
         if (startLoad) {
-            mContactsOperationView.contactsLoading();
+            mContactsOperationView.contactsLoading();//显示“正在加载联系人”
         }
 
 //        mKeyboardSwitchLayout = view.findViewById(R.id.keyboard_switch_layout);
@@ -176,7 +177,7 @@ public class T9SearchFragment extends BaseFragment implements OnT9TelephoneDialp
     public void onContactsLoadFailed() {
         mContactsOperationView.contactsLoadFailed();
     }
-	/*end:OnContactsLoad*/
+    /*end:OnContactsLoad*/
 
 
     /*start:OnContactsOperationView*/
@@ -205,6 +206,9 @@ public class T9SearchFragment extends BaseFragment implements OnT9TelephoneDialp
         }
     }
 
+
+    // 经ContactsAdapter中的mOnContactsAdapter.onContactsCall(contacts)——》
+    // ContactsOperationView中的mOnContactsOperationView.onContactsCall(contacts)传过来
     @Override
     public void onContactsCall(Contacts contacts) {
         //Toast.makeText(mContext, "onContactsCall"+contacts.getPhoneNumber(), Toast.LENGTH_SHORT).show();
@@ -214,7 +218,8 @@ public class T9SearchFragment extends BaseFragment implements OnT9TelephoneDialp
         }
     }
 
-
+    // 经ContactsAdapter中的 mOnContactsAdapter.onContactsSms(contacts)——》
+    // ContactsOperationView中的mOnContactsOperationView.onContactsSms(contacts)传过来
     @Override
     public void onContactsSms(Contacts contacts) {
         //Toast.makeText(mContext, "onContactsSms"+contacts.getPhoneNumber(), Toast.LENGTH_SHORT).show();

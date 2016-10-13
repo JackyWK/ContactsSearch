@@ -52,7 +52,7 @@ public class ContactsOperationView extends FrameLayout implements
 		void onContactsCall(Contacts contacts);
 		void onContactsSms(Contacts contacts);
 	}
-	
+
 	final Handler handler = new Handler() {
 
 		@Override
@@ -82,8 +82,8 @@ public class ContactsOperationView extends FrameLayout implements
 		initListener();
 	}
 
-	
-	
+
+
 	@Override
 	public void onContactsSelected(Contacts contacts) {
 		int contactsIndex = ContactsHelper.getInstance()
@@ -93,7 +93,7 @@ public class ContactsOperationView extends FrameLayout implements
 		}
 
 		mContactsLv.setSelection(contactsIndex);
-		
+
 		clearViewDisappearMsg();
 		sendViewDisappearMsg();
 		// mQuickAlphabeticLv.setSelection(position);
@@ -148,7 +148,7 @@ public class ContactsOperationView extends FrameLayout implements
 		refreshContactsLv();
 	}
 	/*end:OnContactsAdapter*/
-	
+
 	public OnContactsOperationView getOnContactsOperationView() {
 		return mOnContactsOperationView;
 	}
@@ -156,7 +156,7 @@ public class ContactsOperationView extends FrameLayout implements
 	public void setOnContactsOperationView(OnContactsOperationView onContactsOperationView) {
 		mOnContactsOperationView = onContactsOperationView;
 	}
-	
+
 	public void contactsLoading() {
 		ViewUtil.showView(mLoadContactsView);
 	}
@@ -174,29 +174,29 @@ public class ContactsOperationView extends FrameLayout implements
 	public void clearSelectedContacts(){
 		mContactsAdapter.clearSelectedContacts();
 	}
-	
+
 	public void updateContactsList(boolean searchEmpty) {
 		if (null == mContactsLv) {
 			return;
 		}
-		
-		
+
+
 		if(true==searchEmpty){
 			ViewUtil.showView(mQuickAlphabeticBar);
 		}else{
 			ViewUtil.hideView(mQuickAlphabeticBar);
 		}
-		
+
 		refreshContactsLv();
 	}
-	
+
 	public void refreshContactsLv() {
 		if (null == mContactsLv) {
 			return;
 		}
-		
+
 		ViewUtil.hideView(mContactsIndexView);
-		
+
 		BaseAdapter contactsAdapter = (BaseAdapter) mContactsLv.getAdapter();
 		if (null != contactsAdapter) {
 			contactsAdapter.notifyDataSetChanged();
@@ -211,7 +211,7 @@ public class ContactsOperationView extends FrameLayout implements
 			}
 		}
 	}
-	
+
 	private void initView() {
 		LayoutInflater inflater = (LayoutInflater) mContext
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -242,7 +242,7 @@ public class ContactsOperationView extends FrameLayout implements
 	private void initData() {
 		mContactsAdapter = new ContactsAdapter(mContext,
 				R.layout.contacts_list_item, ContactsHelper.getInstance()
-						.getSearchContacts());
+						.getSearchContacts());//contacts_list_item.xml中定义了显示每个联系人能够下拉显示 打电话 和 发短信 按钮
 		mContactsAdapter.setOnContactsAdapter(this);
 		mContactsLv.setAdapter(mContactsAdapter);
 	}
@@ -254,17 +254,17 @@ public class ContactsOperationView extends FrameLayout implements
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				Contacts contacts = (Contacts) parent.getItemAtPosition(position);
-				
+
 				if(false==contacts.isFirstMultipleContacts()){
 					return;
 				}
-				
+
 				Contacts.hideOrUnfoldMultipleContactsView(contacts);
-				
+
 				if(null!=mOnContactsOperationView){
 					mOnContactsOperationView.onListItemClick(contacts,position);
 				}
-				
+
 			}
 		});
 
@@ -307,7 +307,7 @@ public class ContactsOperationView extends FrameLayout implements
 				VIEW_SHOW_DELAY_TIME_MILLIS);
 		return;
 	}
-	
+
 	private void clearViewShowMsg() {
 
 		if (handler.hasMessages(HANDLER_MSG_VIEW_DISPLAY)) {
@@ -316,7 +316,7 @@ public class ContactsOperationView extends FrameLayout implements
 
 		return;
 	}
-	
+
 	private void sendViewDisappearMsg() {
 		clearViewDisappearMsg();
 		handler.sendEmptyMessageDelayed(HANDLER_MSG_VIEW_DISAPPEAR,
@@ -332,5 +332,5 @@ public class ContactsOperationView extends FrameLayout implements
 
 		return;
 	}
-	
+
 }
