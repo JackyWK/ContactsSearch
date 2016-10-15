@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.handsomezhou.contactssearch.R;
 import com.handsomezhou.contactssearch.activity.AddContactActivity;
+import com.handsomezhou.contactssearch.activity.ContactDetailActivity;
 import com.handsomezhou.contactssearch.helper.ContactsHelper;
 import com.handsomezhou.contactssearch.helper.ContactsHelper.OnContactsLoad;
 import com.handsomezhou.contactssearch.helper.ContactsIndexHelper;
@@ -227,7 +228,14 @@ public class T9SearchFragment extends BaseFragment implements OnT9TelephoneDialp
             ShareUtil.shareTextBySms(getContext(), contacts.getPhoneNumber(), null);
         }
     }
-	/*end:OnContactsOperationView*/
+
+    @Override
+    public void onContactSelected(Contacts contacts) {
+        Intent intent = new Intent(mContext, ContactDetailActivity.class);
+        startActivity(intent);
+    }
+
+    /*end:OnContactsOperationView*/
 
     public boolean isFirstRefreshView() {
         return mFirstRefreshView;

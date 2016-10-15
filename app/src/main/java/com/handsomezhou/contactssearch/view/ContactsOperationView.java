@@ -51,6 +51,8 @@ public class ContactsOperationView extends FrameLayout implements
 		void onRemoveContactsSelected(Contacts contacts);
 		void onContactsCall(Contacts contacts);
 		void onContactsSms(Contacts contacts);
+
+		void onContactSelected(Contacts contacts);
 	}
 
 	final Handler handler = new Handler() {
@@ -128,25 +130,32 @@ public class ContactsOperationView extends FrameLayout implements
 			mOnContactsOperationView.onRemoveContactsSelected(contacts);
 		}
 	}
-	@Override
-	public void onContactsCall(Contacts contacts) {
-		if(null!=contacts){
-			mOnContactsOperationView.onContactsCall(contacts);
-		}
-	}
-
-	@Override
-	public void onContactsSms(Contacts contacts) {
-		if(null!=contacts){
-			mOnContactsOperationView.onContactsSms(contacts);
-		}
-	}
-
-	@Override
+//	@Override
+//	public void onContactsCall(Contacts contacts) {
+//		if(null!=contacts){
+//			mOnContactsOperationView.onContactsCall(contacts);
+//		}
+//	}
+//
+//	@Override
+//	public void onContactsSms(Contacts contacts) {
+//		if(null!=contacts){
+//			mOnContactsOperationView.onContactsSms(contacts);
+//		}
+//	}
+//
+//	@Override
 	public void onContactsRefreshView() {
 		// TODO Auto-generated method stub
 		refreshContactsLv();
 	}
+
+	@Override
+	public void onContactSelected(Contacts contacts) {
+		mOnContactsOperationView.onContactSelected(contacts);
+
+	}
+
 	/*end:OnContactsAdapter*/
 
 	public OnContactsOperationView getOnContactsOperationView() {
@@ -191,11 +200,11 @@ public class ContactsOperationView extends FrameLayout implements
 	}
 
 	public void refreshContactsLv() {
-		if (null == mContactsLv) {
+		if (null == mContactsLv) {   //有问题 20161014
 			return;
 		}
 
-		ViewUtil.hideView(mContactsIndexView);
+		ViewUtil.showView(mContactsIndexView);//不显示 选中的姓名首字母
 
 		BaseAdapter contactsAdapter = (BaseAdapter) mContactsLv.getAdapter();
 		if (null != contactsAdapter) {
@@ -233,14 +242,16 @@ public class ContactsOperationView extends FrameLayout implements
 		mSearchResultPromptTv = (TextView) mContactsOperationView
 				.findViewById(R.id.search_result_prompt_text_view);
 
-		ViewUtil.showView(mContactsLv);
+
+
+		ViewUtil.hideView(mContactsLv);
 		ViewUtil.hideView(mContactsIndexView);
 		ViewUtil.hideView(mLoadContactsView);
 		ViewUtil.hideView(mSearchResultPromptTv);
 	}
 
 	private void initData() {
-		mContactsAdapter = new ContactsAdapter(mContext,
+		mContactsAdapter = new ContactsAdapter(mContext,//这里new的时候就已经把数据传给ArrayAdapter类了
 				R.layout.contacts_list_item, ContactsHelper.getInstance()
 						.getSearchContacts());//contacts_list_item.xml中定义了显示每个联系人能够下拉显示 打电话 和 发短信 按钮
 		mContactsAdapter.setOnContactsAdapter(this);

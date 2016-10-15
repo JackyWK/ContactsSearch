@@ -1,8 +1,5 @@
 package com.handsomezhou.contactssearch.fragment;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -13,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.handsomezhou.contactssearch.R;
+import com.handsomezhou.contactssearch.activity.AddContactActivity;
 import com.handsomezhou.contactssearch.helper.ContactsHelper;
 import com.handsomezhou.contactssearch.helper.ContactsHelper.OnContactsLoad;
 import com.handsomezhou.contactssearch.helper.ContactsIndexHelper;
@@ -22,6 +20,9 @@ import com.handsomezhou.contactssearch.view.ContactsOperationView;
 import com.handsomezhou.contactssearch.view.ContactsOperationView.OnContactsOperationView;
 import com.handsomezhou.contactssearch.view.SearchBox;
 import com.handsomezhou.contactssearch.view.SearchBox.OnSearchBox;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class QwertySearchFragment extends BaseFragment implements OnContactsLoad,OnContactsOperationView,OnSearchBox{
 	private static final String TAG="QwertySearchFragment";
@@ -41,19 +42,19 @@ public class QwertySearchFragment extends BaseFragment implements OnContactsLoad
 		super.onResume();
 	}
 
-	
+
 	@Override
 	public void onDestroy() {
 		mSearchBox.getSearchEt().setText("");
 		ContactsHelper.getInstance().qwertySearch(null);
-		
+
 		List<Contacts> selectedContactsList=new ArrayList<Contacts>();
 		selectedContactsList.addAll(ContactsHelper.getInstance().getSelectedContacts().values());
 		Log.i(TAG, "onDestroy() selectedContactsList.size()="+selectedContactsList.size());
 		for(Contacts cs:selectedContactsList){
 			Log.i(TAG, "onDestroy() name=["+cs.getName()+"] phoneNumber=["+cs.getPhoneNumber()+"]");
 		}
-		
+
 		mContactsOperationView.clearSelectedContacts();
 		ContactsHelper.getInstance().clearSelectedContacts();
 		super.onDestroy();
@@ -65,7 +66,7 @@ public class QwertySearchFragment extends BaseFragment implements OnContactsLoad
 		setContext(getActivity());
 		ContactsHelper.getInstance().setOnContactsLoad(this);
 		setFirstRefreshView(true);
-		
+
 	}
 
 	@Override
@@ -84,7 +85,7 @@ public class QwertySearchFragment extends BaseFragment implements OnContactsLoad
 
 	@Override
 	protected void initListener() {
-		
+
 	}
 
 	/*Start: OnContactsLoad*/
@@ -92,26 +93,26 @@ public class QwertySearchFragment extends BaseFragment implements OnContactsLoad
 	public void onContactsLoadSuccess() {
 		ContactsHelper.getInstance().qwertySearch(null);
 		mContactsOperationView.contactsLoadSuccess();
-		
+
 		ContactsIndexHelper.getInstance().praseContacts(ContactsHelper.getInstance().getBaseContacts());
-		
+
 	}
 
 	@Override
 	public void onContactsLoadFailed() {
 		mContactsOperationView.contactsLoadFailed();
-		
+
 	}
 	/*End: OnContactsLoad*/
-	
+
 	/*start: OnSearchBox*/
 	@Override
 	public void onSearchTextChanged(String curCharacter) {
 		updateSearch(curCharacter);
-		
+
 	}
 	/*end: OnSearchBox*/
-	
+
 	/*Start: OnContactsOperationView*/
 	@Override
 	public void onListItemClick(Contacts contacts,int position){
@@ -137,7 +138,7 @@ public class QwertySearchFragment extends BaseFragment implements OnContactsLoad
 			ContactsHelper.getInstance().removeSelectedContacts(contacts);
 		}
 	}
-	
+
 	@Override
 	public void onContactsCall(Contacts contacts) {
 		//Toast.makeText(mContext, "onContactsCall"+contacts.getPhoneNumber(), Toast.LENGTH_SHORT).show();
@@ -153,9 +154,15 @@ public class QwertySearchFragment extends BaseFragment implements OnContactsLoad
 		//Toast.makeText(mContext, "onContactsSms"+contacts.getPhoneNumber(), Toast.LENGTH_SHORT).show();
 		ShareUtil.shareTextBySms(getContext(), contacts.getPhoneNumber(), null);
 	}
+
+	@Override
+	public void onContactSelected(Contacts contacts) {
+		Intent intent = new Intent(mContext, AddContactActivity.class);
+		startActivity(intent);
+	}
 	/*Start: OnContactsOperationView*/
-	
-	
+
+
 	public boolean isFirstRefreshView() {
 		return mFirstRefreshView;
 	}
@@ -165,7 +172,7 @@ public class QwertySearchFragment extends BaseFragment implements OnContactsLoad
 		mFirstRefreshView = firstRefreshView;
 	}
 
-	
+
 	private void updateSearch(String search) {
 		String curCharacter;
 		if (null == search) {
@@ -173,14 +180,14 @@ public class QwertySearchFragment extends BaseFragment implements OnContactsLoad
 		} else {
 			curCharacter = search.trim();
 		}
-		
+
 		if(TextUtils.isEmpty(curCharacter)){
 			ContactsHelper.getInstance().qwertySearch(null);
 		}else{
 			ContactsHelper.getInstance().qwertySearch(curCharacter);
 		}
 		mContactsOperationView.updateContactsList(TextUtils.isEmpty(curCharacter));
-		
+
 	}
 
 

@@ -35,11 +35,13 @@ public class ContactsAdapter extends ArrayAdapter<Contacts> implements SectionIn
 
         void onRemoveContactsSelected(Contacts contacts);
 
-        void onContactsCall(Contacts contacts);
+//        void onContactsCall(Contacts contacts);
 
-        void onContactsSms(Contacts contacts);
+//        void onContactsSms(Contacts contacts);
 
         void onContactsRefreshView();
+
+        void onContactSelected(Contacts contacts);
     }
 
     public ContactsAdapter(Context context, int textViewResourceId, List<Contacts> contacts) {
@@ -88,15 +90,15 @@ public class ContactsAdapter extends ArrayAdapter<Contacts> implements SectionIn
         if (null == convertView) {
             view = LayoutInflater.from(mContext).inflate(mTextViewResourceId, null);//即contacts_list_item.xml
             viewHolder = new ViewHolder();
-            viewHolder.contact_infoRLaout = (RelativeLayout) view.findViewById(R.id.contacts_info);//包含姓名和电话的布局，用于点击弹出一个界面
+            viewHolder.contact_info_RLayout = (RelativeLayout) view.findViewById(R.id.contacts_info);//包含姓名和电话的布局，用于点击弹出一个界面
             viewHolder.mAlphabetTv = (TextView) view.findViewById(R.id.alphabet_text_view);
             viewHolder.mContactsMultiplePhoneOperationPromptIv = (ImageView) view.findViewById(R.id.contacts_multiple_phone_operation_prompt_image_view);
             viewHolder.mSelectContactsCB = (CheckBox) view.findViewById(R.id.select_contacts_check_box);
             viewHolder.mNameTv = (TextView) view.findViewById(R.id.name_text_view);
             viewHolder.mPhoneNumber = (TextView) view.findViewById(R.id.phone_number_text_view);
-//            viewHolder.mOperationViewIv = (ImageView) view.findViewById(R.id.operation_view_image_view);//打开扩展项：用以显示打电话和发短信图标
+            viewHolder.mOperationViewIv = (ImageView) view.findViewById(R.id.operation_view_image_view);//打开扩展项：用以显示打电话和发短信图标
             viewHolder.mDivisionLineView = view.findViewById(R.id.division_line_view);
-            viewHolder.mOperationViewLayout = (View) view.findViewById(R.id.operation_view_layout);
+            viewHolder.mOperationViewLayout = (RelativeLayout) view.findViewById(R.id.contacts_info);
 //            viewHolder.mCallIv = (ImageView) view.findViewById(R.id.call_image_view);//打电话图标
 //            viewHolder.mSmsIv = (ImageView) view.findViewById(R.id.sms_image_view);//发短信图标
             view.setTag(viewHolder);
@@ -170,9 +172,12 @@ public class ContactsAdapter extends ArrayAdapter<Contacts> implements SectionIn
             }
         });
 
-//        viewHolder.mOperationViewIv.setTag(position);
-//        int resid = (contacts.isHideOperationView()) ? (R.drawable.arrow_down_selector) : (R.drawable.arrow_up_selector);
-//        viewHolder.mOperationViewIv.setBackgroundResource(resid);//设置上下指示按钮用于是否打开 打电话 发短信 界面项
+        viewHolder.mOperationViewIv.setTag(position);
+        int resid = (contacts.isHideOperationView()) ? (R.drawable.arrow_down_selector) : (R.drawable.arrow_up_selector);
+        viewHolder.mOperationViewIv.setBackgroundResource(resid);//设置上下指示按钮用于是否打开 打电话 发短信 界面项
+
+        viewHolder.contact_info_RLayout.setTag(position);//为每一个contact_info_RLayout设置其相应的位置
+
         if (contacts.isHideOperationView()) {
             ViewUtil.hideView(viewHolder.mDivisionLineView);
             ViewUtil.hideView(viewHolder.mOperationViewLayout);
@@ -181,18 +186,32 @@ public class ContactsAdapter extends ArrayAdapter<Contacts> implements SectionIn
             ViewUtil.showView(viewHolder.mDivisionLineView);
             ViewUtil.showView(viewHolder.mOperationViewLayout);
         }
-//        viewHolder.mOperationViewIv.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                int position = (Integer) v.getTag();
-//                Contacts contacts = getItem(position);
-//                contacts.setHideOperationView(!contacts.isHideOperationView());
-//                if (null != mOnContactsAdapter) {
-//                    mOnContactsAdapter.onContactsRefreshView();
-//                }
-//            }
-//        });
+
+        viewHolder.contact_info_RLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position =(Integer) v.getTag();
+                Contacts contacts = getItem(position);//把选中的联系人信息传过去，以使那边能够将此信息用Activity展现出来（由于此类不能使用startActivity()方法）
+                if (null != mOnContactsAdapter) {
+                    mOnContactsAdapter.onContactSelected(contacts);
+                }
+
+
+
+            }
+        });
+        viewHolder.mOperationViewIv.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                int position = (Integer) v.getTag();
+                Contacts contacts = getItem(position);
+                contacts.setHideOperationView(!contacts.isHideOperationView());//是否隐藏 打电话 发短信 界面项
+                if (null != mOnContactsAdapter) {
+                    mOnContactsAdapter.onContactsRefreshView();
+                }
+            }
+        });
 
 //        viewHolder.mCallIv.setTag(position);
 //        viewHolder.mCallIv.setOnClickListener(new View.OnClickListener() {//实现打电话功能
@@ -255,17 +274,17 @@ public class ContactsAdapter extends ArrayAdapter<Contacts> implements SectionIn
     }
 
     private class ViewHolder {
-        RelativeLayout contact_infoRLaout;
+        RelativeLayout contact_info_RLayout;
         TextView mAlphabetTv;
         ImageView mContactsMultiplePhoneOperationPromptIv;
         CheckBox mSelectContactsCB;
         TextView mNameTv;
         TextView mPhoneNumber;
-//        ImageView mOperationViewIv;
+        ImageView mOperationViewIv;
 
         View mDivisionLineView;
 
-        View mOperationViewLayout;
+        RelativeLayout mOperationViewLayout;
 //        ImageView mCallIv;
 //        ImageView mSmsIv;
     }

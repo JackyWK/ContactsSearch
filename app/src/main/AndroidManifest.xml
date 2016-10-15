@@ -38,7 +38,11 @@
             android:label="添加联系人"
             android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen"
             android:windowSoftInputMode="stateAlwaysHidden">
-
+        </activity>
+        <activity android:name=".activity.ContactDetailActivity"
+            android:label="选中的联系人信息"
+            android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen"
+            android:windowSoftInputMode="stateAlwaysHidden">
         </activity>
 
         <!-- 注册一个ContentProvider -->
