@@ -102,6 +102,7 @@ public class T9SearchFragment extends BaseFragment implements OnT9TelephoneDialp
 
         mContactsOperationView = (ContactsOperationView) view.findViewById(R.id.contacts_operation_layout);//显示联系人列表的界面
         mContactsOperationView.setOnContactsOperationView(this);
+
         boolean startLoad = ContactsHelper.getInstance().startLoadContacts();
         if (startLoad) {
             mContactsOperationView.contactsLoading();//显示“正在加载联系人”

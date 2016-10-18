@@ -45,7 +45,7 @@ public class ContactsOperationView extends FrameLayout implements
 	private View mContactsOperationView;
 	private OnContactsOperationView mOnContactsOperationView;
 
-	public interface OnContactsOperationView{
+	public interface OnContactsOperationView{ //别的类在实现该接口时的引用方式有点看不懂，没有引用外部类名 20161018 wk
 		void onListItemClick(Contacts contacts, int position);
 		void onAddContactsSelected(Contacts contacts);
 		void onRemoveContactsSelected(Contacts contacts);
@@ -241,10 +241,7 @@ public class ContactsOperationView extends FrameLayout implements
 				.findViewById(R.id.select_char_text_view);
 		mSearchResultPromptTv = (TextView) mContactsOperationView
 				.findViewById(R.id.search_result_prompt_text_view);
-
-
-
-		ViewUtil.hideView(mContactsLv);
+		ViewUtil.showView(mContactsLv);
 		ViewUtil.hideView(mContactsIndexView);
 		ViewUtil.hideView(mLoadContactsView);
 		ViewUtil.hideView(mSearchResultPromptTv);
@@ -306,6 +303,7 @@ public class ContactsOperationView extends FrameLayout implements
 
 			}
 		});
+
 
 		mQuickAlphabeticBar.setSectionIndexer(mContactsAdapter);
 		mQuickAlphabeticBar.setQuickAlphabeticLv(mContactsLv);
